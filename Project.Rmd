@@ -1,0 +1,63 @@
+---
+title: "Practical Machine Learning Course Project"
+output: html_document
+---
+
+##Executive Summary
+
+
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(fig.width=3.5, fig.height=3,
+                      echo=FALSE, warning=FALSE, message=FALSE)
+```
+
+
+**Exploratory Data Analysis**
+
+
+```{r}
+#loading libraries
+library(dplyr)
+
+training_url <- "https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv"
+testing_url <- "https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv"
+
+training_raw <- read.csv(file = training_url, header = TRUE)
+testing_raw <- read.csv(file = testing_url, header = TRUE)
+
+training <- training_raw %>%
+  select(user_name,
+         classe,
+         contains("_belt_"),
+         contains("_forearm_"),
+         contains("_arm_"),
+         contains("_dumbell_"))
+
+testing <- testing_raw %>%
+  select(user_name,
+         problem_id,
+         contains("_belt_"),
+         contains("_forearm_"),
+         contains("_arm_"),
+         contains("_dumbell_"))
+
+```
+
+**Regression Models**
+
+```{r, echo=TRUE}
+```
+
+
+**Conclusion**
+
+
+**end**
+
+
+##Appendix - A1
+
+**Detailed : Eploratory data analysis**
+
+```{r, echo=TRUE, fig.width=8, fig.height=8}
+```
