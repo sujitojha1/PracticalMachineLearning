@@ -4,27 +4,34 @@ output: html_document
 ---
 
 ##Executive Summary
+Exploring usage of devices such as Jawbone Up, Nike FuelBand, and Fitbit to quantify how well a person did his excerise activities.
+In this project, goal is to use data from accelerometers on the belt, forearm, arm, and dumbell of 6 participants. Participants were asked to perform barbell lifts correctly and incorrectly in 5 different ways.
 
+Based on the data, built a random forest model to predict classe of excerise activity. Final Model predicts 18 correctly and 2 incorrectly for test set.
 
 ```{r global_options, include=FALSE}
 knitr::opts_chunk$set(fig.width=3.5, fig.height=3,
-                      echo=FALSE, warning=FALSE, message=FALSE)
+                      echo=TRUE, warning=FALSE, message=FALSE,cache=TRUE)
 ```
 
 
-**Exploratory Data Analysis**
+**1. Getting and Cleaning Data**
 
 
 ```{r}
 #loading libraries
+library(plyr)
 library(dplyr)
+library(caret)
+library(doParallel)
 
+#Downloading the data
 training_url <- "https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv"
 testing_url <- "https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv"
-
 training_raw <- read.csv(file = training_url, header = TRUE)
 testing_raw <- read.csv(file = testing_url, header = TRUE)
 
+#Keeping required columns, considered only accelerometer as described in the problem statement
 training <- training_raw %>%
   select(user_name,
          classe,
@@ -43,21 +50,78 @@ testing <- testing_raw %>%
 
 ```
 
-**Regression Models**
+**2. Exploratory Data Analysis**
 
-```{r, echo=TRUE}
+No exploratory data analysis was done as per problem statement : "In this project, your goal will be to use data from accelerometers on the belt, forearm, arm, and dumbell of 6 participants."
+
+**3. Selection : Classification Models**
+
+Given below are different classification model and respective accuracies. 
+
+- To ensure the model is not overfitting, each models are trained with option of cross validation. "K-Fold" cross validation technique is used.
+- Since accelerometer reading for different direction are generally co-related, number of predictors are reduced using principal component analysis.
+
+
+```{r}
+# Nearest Neighbour Model
+fit1 <- train(data = training,
+              classe ~ .,
+              method = "knn",
+              preProcess = "pca",
+              tuneLength = 3,
+              trControl = trainControl(method = "cv"))
+
+# Random Forest model
+fit2 <- train(data = training,
+              classe ~ .,
+              method = "rf",
+              preProcess = "pca",
+              trControl = trainControl(method = "cv"))
+
+# Decision Tree model
+fit3 <- train(data = training,
+              classe ~ .,
+              method = "rpart",
+              preProcess = c("center","scale"),
+              trControl = trainControl(method = "cv"))
+
+# Linear Discriminant Analysis model
+fit4 <- train(data = training,
+              classe ~ .,
+              method = "lda",
+              preProcess = "pca",
+              tuneLength = 10,
+              trControl = trainControl(method = "cv"))
+
+# Naive Bayes Model
+fit5 <- train(data = training,
+              classe ~ .,
+              method = "nb",
+              preProcess = "pca",
+              trControl = trainControl(method = "cv"))
+
+# Accuracies
+ModelNames <- c("Nearest Neighbour",
+                "Random Forest",
+                "Decission Tree",
+                "Linear Discriminant Analysis",
+                "Naive Bayes")
+
+ModelAccuracies <- c(fit1$results[1,2],
+                     fit2$results[1,2],
+                     fit3$results[1,2],
+                     fit4$results[1,2],
+                     fit5$results[2,3])
+
+ModelSummary <- data.frame(ModelNames,ModelAccuracies)
+ModelSummary
+
 ```
 
+And the winner is "Random Forest Model".
 
-**Conclusion**
+**4. Predictions : Random Forest Model**
 
-
-**end**
-
-
-##Appendix - A1
-
-**Detailed : Eploratory data analysis**
-
-```{r, echo=TRUE, fig.width=8, fig.height=8}
+```{r}
+predict(fit2,testing)
 ```

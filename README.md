@@ -22,6 +22,6 @@ The data for this project come from this source: http://groupware.les.inf.puc-ri
 
 Files :
 
-1. run_analysis.R - Main program to extract the tidy data set. Before you run, copy the "UCI HAR Dataset" folder to working directory first. Refer **CodeBook.md** to know more about this code.
-2. CodeBook.md - Describes the variables, the data, and any transformations or work that is performed to clean up the data.
+1. Project.Rmd - Main program generating the HTML report.
+2. Project.html - HTML report.
 3. README.md - This read me document.
